@@ -281,8 +281,8 @@ class LikelihoodModel(Model):
         }
 
         if method == 'newton':
-            score = lambda params: self.score(params)
-            hess = lambda params: self.hessian(params)
+            score = lambda params: self.score(params, args=fargs) 
+            hess = lambda params: self.hessian(params, args=fargs)
 
         func = fit_funcs[method]
         xopt, retvals = func(f, score, start_params, fargs, kwargs,
