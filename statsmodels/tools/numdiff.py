@@ -33,6 +33,7 @@ License : BSD
 #in example: if J = d x*beta / d beta then J'J == X'X
 #   similar to http://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm
 import numpy as np
+import pdb
 
 #NOTE: we only do double precision internally so far
 EPS = np.MachAr().eps
@@ -319,7 +320,7 @@ def approx_hess3(x, f, epsilon=None, args=(), kwargs={}):
     h = _get_epsilon(x, 4, epsilon, n)
     ee = np.diag(h)
     hess = np.outer(h,h)
-
+    
     for i in range(n):
         for j in range(i,n):
             hess[i,j] = (f(*((x + ee[i,:] + ee[j,:],)+args), **kwargs)
@@ -328,6 +329,7 @@ def approx_hess3(x, f, epsilon=None, args=(), kwargs={}):
                           - f(*((x - ee[i,:] - ee[j,:],)+args), **kwargs),)
                           )/(4.*hess[i,j])
             hess[j,i] = hess[i,j]
+
     return hess
 
 approx_hess3.__doc__ = _hessian_docs % dict(scale="4", extra_params="",

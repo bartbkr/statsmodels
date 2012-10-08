@@ -9,7 +9,6 @@ import statsmodels.base.wrapper as wrap
 from statsmodels.tools.numdiff import approx_fprime
 from statsmodels.formula import handle_formula_data
 
-
 class Model(object):
     """
     A (predictive) statistical model. The class Model itself is not to be used.
@@ -265,9 +264,9 @@ class LikelihoodModel(Model):
         # args in most (any?) of the optimize function
 
         f = lambda params, *args: -self.loglike(params, *args)
-        score = lambda params: -self.score(params)
+        score = lambda params, *args: -self.score(params, *args)
         try:
-            hess = lambda params: -self.hessian(params)
+            hess = lambda params, *args: -self.hessian(params, *args)
         except:
             hess = None
 
@@ -301,7 +300,7 @@ class LikelihoodModel(Model):
             Hinv = np.linalg.inv(-retvals['Hessian'])
         else:
             try:
-                Hinv = np.linalg.inv(-1 * self.hessian(xopt))
+                Hinv = np.linalg.inv(-1 * self.hessian(xopt, fargs))
             except:
                 #might want custom warning ResultsWarning? NumericalWarning?
                 from warnings import warn
@@ -311,7 +310,8 @@ class LikelihoodModel(Model):
                 Hinv = None
 
         #TODO: add Hessian approximation and change the above if needed
-        mlefit = LikelihoodModelResults(self, xopt, Hinv, scale=1.)
+        mlefit = LikelihoodModelResults(self, xopt, \
+                                        normalized_cov_params=Hinv, scale=1.)
 
         #TODO: hardcode scale?
         if isinstance(retvals, dict):
