@@ -9,8 +9,13 @@ import statsmodels.base.wrapper as wrap
 from statsmodels.tools.numdiff import approx_fprime
 from statsmodels.formula import handle_formula_data
 
+class Model(object):
+    """
+    A (predictive) statistical model. The class Model itself is not to be used.
 
-_model_params_doc = """    Parameters
+    Model lays out the methods expected of any subclass.
+
+    Parameters
     ----------
     endog : array-like
         1-d endogenous response variable. The independent variable.
@@ -285,9 +290,9 @@ class LikelihoodModel(Model):
 
         nobs = self.endog.shape[0]
         f = lambda params, *args: -self.loglike(params, *args) / nobs
-        score = lambda params: -self.score(params) / nobs
+        score = lambda params, *args: -self.score(params, *args) / nobs
         try:
-            hess = lambda params: -self.hessian(params) / nobs
+            hess = lambda params, *args: -self.hessian(params, *args) / nobs
         except:
             hess = None
 
@@ -326,7 +331,7 @@ class LikelihoodModel(Model):
             Hinv = np.linalg.inv(-retvals['Hessian']) / nobs
         else:
             try:
-                Hinv = np.linalg.inv(-1 * self.hessian(xopt))
+                Hinv = np.linalg.inv(-1 * self.hessian(xopt, fargs))
             except:
                 #might want custom warning ResultsWarning? NumericalWarning?
                 from warnings import warn
@@ -336,7 +341,8 @@ class LikelihoodModel(Model):
                 Hinv = None
 
         #TODO: add Hessian approximation and change the above if needed
-        mlefit = LikelihoodModelResults(self, xopt, Hinv, scale=1.)
+        mlefit = LikelihoodModelResults(self, xopt, \
+                                        normalized_cov_params=Hinv, scale=1.)
 
         #TODO: hardcode scale?
         if isinstance(retvals, dict):
