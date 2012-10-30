@@ -9,13 +9,7 @@ import statsmodels.base.wrapper as wrap
 from statsmodels.tools.numdiff import approx_fprime
 from statsmodels.formula import handle_formula_data
 
-class Model(object):
-    """
-    A (predictive) statistical model. The class Model itself is not to be used.
-
-    Model lays out the methods expected of any subclass.
-
-    Parameters
+_model_params_doc = """ Parameters
     ----------
     endog : array-like
         1-d endogenous response variable. The independent variable.
@@ -38,7 +32,7 @@ class Model(object):
 
     Notes
     -----
-    `endog` and `exog` are references to any data provided.  So if the data is
+    `endog` and `exog` are references to any data provided. So if the data is
     already stored in numpy arrays and it is changed then `endog` and `exog`
     will change as well.
     """ % {'params_doc' : _model_params_doc,
@@ -331,7 +325,7 @@ class LikelihoodModel(Model):
             Hinv = np.linalg.inv(-retvals['Hessian']) / nobs
         else:
             try:
-                Hinv = np.linalg.inv(-1 * self.hessian(xopt, fargs))
+                Hinv = np.linalg.inv(-1 * self.hessian(xopt, *fargs))
             except:
                 #might want custom warning ResultsWarning? NumericalWarning?
                 from warnings import warn
