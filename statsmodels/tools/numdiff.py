@@ -33,7 +33,6 @@ License : BSD
 #in example: if J = d x*beta / d beta then J'J == X'X
 #   similar to http://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm
 import numpy as np
-import pdb
 
 #NOTE: we only do double precision internally so far
 EPS = np.MachAr().eps

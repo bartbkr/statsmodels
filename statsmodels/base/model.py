@@ -335,8 +335,8 @@ class LikelihoodModel(Model):
                 Hinv = None
 
         #TODO: add Hessian approximation and change the above if needed
-        mlefit = LikelihoodModelResults(self, xopt, \
-                                        normalized_cov_params=Hinv, scale=1.)
+        mlefit = LikelihoodModelResults(self, xopt, normalized_cov_params=Hinv,
+                scale=1.)
 
         #TODO: hardcode scale?
         if isinstance(retvals, dict):
