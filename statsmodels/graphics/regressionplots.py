@@ -16,7 +16,7 @@ import numpy as np
 from statsmodels.regression.linear_model import OLS
 from statsmodels.sandbox.regression.predstd import wls_prediction_std
 from statsmodels.graphics import utils
-from statsmodels.nonparametric import lowess
+from statsmodels.nonparametric.smoothers_lowess import lowess
 
 
 __all__ = ['plot_fit', 'plot_regress_exog', 'plot_partregress', 'plot_ccpr',
@@ -27,7 +27,7 @@ def _high_leverage(results):
     #TODO: replace 1 with k_constant
     return 2. * (results.df_model + 1)/results.nobs
 
-def add_lowess(ax, lines_idx=0, frac=.2, **lowess_kwargs)
+def add_lowess(ax, lines_idx=0, frac=.2, **lowess_kwargs):
     """
     Add Lowess line to a plot.
 
