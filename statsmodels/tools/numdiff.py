@@ -4,6 +4,8 @@ Author : josef-pkt
 License : BSD
 """
 
+import pdb
+
 #These are simple forward differentiation, so that we have them available
 #without dependencies.
 #
@@ -320,7 +322,9 @@ def approx_hess3(x, f, epsilon=None, args=(), kwargs={}):
     h = _get_epsilon(x, 4, epsilon, n)
     ee = np.diag(h)
     hess = np.outer(h,h)
-    
+
+    pdb.set_trace()
+
     for i in range(n):
         for j in range(i,n):
             hess[i,j] = (f(*((x + ee[i,:] + ee[j,:],)+args), **kwargs)
