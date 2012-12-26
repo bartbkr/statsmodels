@@ -9,6 +9,8 @@ import statsmodels.base.wrapper as wrap
 from statsmodels.tools.numdiff import approx_fprime
 from statsmodels.formula import handle_formula_data
 
+import pdb
+
 _model_params_doc = """ Parameters
     ----------
     endog : array-like
@@ -283,6 +285,7 @@ class LikelihoodModel(Model):
         # args in most (any?) of the optimize function
 
         nobs = self.endog.shape[0]
+        #change this so similar to newton method????
         f = lambda params, *args: -self.loglike(params, *args) / nobs
         score = lambda params, *args: -self.score(params, *args) / nobs
         try:
@@ -302,8 +305,8 @@ class LikelihoodModel(Model):
             fit_funcs.update(extra_fit_funcs)
 
         if method == 'newton':
-            score = lambda params: self.score(params, args=fargs) / nobs
-            hess = lambda params: self.hessian(params, args=fargs) / nobs
+            score = lambda params, *args: self.score(params, *args) / nobs
+            hess = lambda params, *args: self.hessian(params, *args) / nobs
 
         func = fit_funcs[method]
         xopt, retvals = func(f, score, start_params, fargs, kwargs,
@@ -361,10 +364,10 @@ def _fit_mle_newton(f, score, start_params, fargs, kwargs, disp=True,
         history = [oldparams, newparams]
     while (iterations < maxiter and np.any(np.abs(newparams -
             oldparams) > tol)):
-        H = hess(newparams)
+        H = hess(newparams, *fargs)
         oldparams = newparams
         newparams = oldparams - np.dot(np.linalg.inv(H),
-                score(oldparams))
+                score(oldparams, *fargs))
         if retall:
             history.append(newparams)
         if callback is not None:
@@ -387,8 +390,8 @@ def _fit_mle_newton(f, score, start_params, fargs, kwargs, disp=True,
     if full_output:
         (xopt, fopt, niter,
          gopt, hopt) = (newparams, f(newparams, *fargs),
-                        iterations, score(newparams),
-                        hess(newparams))
+                        iterations, score(newparams, *fargs),
+                        hess(newparams, *fargs))
         converged = not warnflag
         retvals = {'fopt': fopt, 'iterations': niter, 'score': gopt,
                    'Hessian': hopt, 'warnflag': warnflag,
